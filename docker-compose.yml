@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+    bullscows-nginx:
+        image: nginx:1.21.4-alpine
+        container_name: bullscows-nginx
+        ports:
+            - "${NGINX_PORT}:80"
+        volumes:
+            - ./:/app
+            - ./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - bullscows-network
+networks:
+    bullscows-network:
