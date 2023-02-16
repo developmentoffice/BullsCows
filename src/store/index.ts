@@ -49,9 +49,11 @@ export const useGameStore = defineStore('gameStore', {
         },
         getWord(): string
         {
-            let max: number = words[this.level].length;
+            let passedWords: string[] = this.records.map(el => el.word);
+            let excludedWords = words[this.level].filter((word: string) => passedWords.indexOf(word) === -1);
+            let max: number = excludedWords.length;
             let i: number = Math.floor(Math.random() * max) - 1;
-            return words[this.level][i];
+            return excludedWords[i];
         },
         save(word: string, attempts: number)
         {
