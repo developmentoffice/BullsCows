@@ -66,9 +66,14 @@ function setLetterRef(el: HTMLInputElement)
         return ref(el);
     }
 }
+function setLetter(event: Event, i: number)
+{
+    input.value[i] = (event.target as HTMLInputElement).value;
+}
 function nextLetter()
 {
     let i: number = input.value.indexOf('');
+
     if (i !== -1)
     {
         letterRefs.value[i].focus();
@@ -178,6 +183,7 @@ function warningModalCancel()
                             :ref="skipUnwrap.letterRefs"
                             v-model="input[i]"
                             @keyup="nextLetter"
+                            @input="setLetter($event, i)"
                         >
                     </td>
                     <td>
