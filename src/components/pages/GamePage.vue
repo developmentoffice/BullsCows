@@ -94,11 +94,11 @@ function submit()
     isEnd.value = true;
     input.value.forEach((inp, j) => {
         inp = inp.toLowerCase();
-        if (inp === wordArr[j])
+        if (inp === wordArr[j] || (wordArr[j] === 'ё' && inp.charCodeAt(0) === 235))
         {
             check.push(2);
         }
-        else if (wordArr.indexOf(inp) !== -1)
+        else if (wordArr.indexOf(inp) !== -1 || (wordArr.indexOf('ё') !== -1 && inp.charCodeAt(0) === 235))
         {
             check.push(1);
         }
