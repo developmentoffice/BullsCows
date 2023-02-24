@@ -19,6 +19,7 @@ const leaveTo: Ref<string> = ref('');
 const forceRedirect: Ref<boolean> = ref(false);
 const word: Ref<string> = ref('');
 const warningModal: Ref<boolean> = ref(false);
+const usedLetters: Ref<string[]> = ref([]);
 
 fillLetters();
 word.value = gameStore.getWord();
@@ -104,6 +105,7 @@ function submit()
         }
         else
         {
+            appendUsedLetters(inp)
             check.push(0);
         }
         if (inp !== word.value[j])
@@ -150,12 +152,30 @@ function warningModalCancel()
     leaveTo.value = '';
     warningModal.value = false;
 }
+function appendUsedLetters(letter: string)
+{
+    const collator = new Intl.Collator();
+    letter = letter.toUpperCase();
+    if (usedLetters.value.indexOf(letter) === -1)
+    {
+        usedLetters.value.push(letter);
+        usedLetters.value.sort((a, b) => collator.compare(a, b));
+    }
+}
 </script>
 
 <template>
     <section class="content has-text-centered" v-if="isEnd">
         <button class="button is-large is-link" type="button" @click="newWord">Новое слово</button>
     </section>
+    <nav class="panel" v-if="usedLetters.length > 0">
+        <p class="panel-heading">Отсутствующие буквы</p>
+        <div class="panel-block">
+            <div class="is-flex is-flex-wrap-wrap">
+                <div class="mr-2 mb-2 is-size-4 has-text-weight-bold" v-for="letter in usedLetters">{{ letter }}</div>
+            </div>
+        </div>
+    </nav>
     <div class="table-container">
         <form @submit.prevent="submit">
             <table class="table is-bordered is-fullwidth game-table">
