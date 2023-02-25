@@ -122,6 +122,7 @@ function submit()
         let word: string = input.value.join('');
         let attempts: number = letters.value.length;
         input.value = [];
+        usedLetters.value = [];
         gameStore.save(word, attempts);
     }
     else
