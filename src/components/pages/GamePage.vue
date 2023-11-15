@@ -52,10 +52,14 @@ function range(n: number)
     }
     return arr;
 }
-function fillLetters()
+function fillLetters(check: number[] = [])
 {
     for (let i = 0; i < gameStore.level; i++) {
-        input.value[i] = '';
+        if (check[i] && check[i] === 2) {
+            input.value[i] = word.value[i]
+        } else {
+            input.value[i] = '';
+        }
     }
 }
 function setLetterRef(el: HTMLInputElement)
@@ -127,7 +131,7 @@ function submit()
     }
     else
     {
-        fillLetters();
+        fillLetters(check);
         isFull.value = false;
         letterRefs.value[0].focus();
     }
