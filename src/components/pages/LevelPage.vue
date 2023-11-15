@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useGameStore } from '@/store';
 import { plural } from '@/helpers';
 
 import type { Ref } from 'vue';
 
 const gameStore = useGameStore();
+const router = useRouter();
 
 function wordsCount(n: number): number
 {
@@ -16,6 +18,7 @@ function setLevel(n: number)
     if (gameStore.records.length < n * gameStore.wordsToNextLevel) return;
     const level = gameStore.availableLevels[n];
     gameStore.setLevel(level);
+    router.push('/');
 }
 </script>
 
