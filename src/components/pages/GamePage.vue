@@ -127,7 +127,7 @@ function submit()
         let attempts: number = letters.value.length;
         input.value = [];
         usedLetters.value = [];
-        gameStore.save(word, attempts);
+        gameStore.save(word.toLowerCase(), attempts);
     }
     else
     {
