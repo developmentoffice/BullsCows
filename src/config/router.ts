@@ -38,7 +38,7 @@ export const routes: RouteRecordRaw[] = [
 ]
 
 const router: Router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(process.env.NODE_ENV === 'production' ? '/BC/' : '/'),
     linkExactActiveClass: 'is-active',
     routes
 })
