@@ -13,7 +13,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, './public'),
-        publicPath: '/',
+        publicPath: (process.env.NODE_ENV === 'production' ? '/BC/' : '/'),
         filename: 'js/[name].[fullhash].js',
         assetModuleFilename: (pathData) => {
             const path = pathData.filename.split('/').slice(1).join('/')
