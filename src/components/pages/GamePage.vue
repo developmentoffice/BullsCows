@@ -207,21 +207,21 @@ function appendUsedLetters(letter: string)
         usedLetters.value.sort((a, b) => collator.compare(a, b));
     }
 }
-function showKeyboard(i: number)
+function showKeyboard(n: number)
 {
-    pos.value = i;
+    pos.value = n;
     keyboard?.setOptions({
         theme: 'hg-theme-default is-active'
     });
     usedLetters.value.forEach(letter => {
-        const char: HTMLElement | null = document.querySelector('.hg-button[data-skbtn="' + letter + '"]');
+        const char: HTMLElement | null = document.querySelector('.hg-button[data-skbtn="' + letter.toUpperCase() + '"]');
         if (char) {
             char.classList.add('is-disabled');
         }
     });
     letters.value.forEach(item => {
         item.val.forEach((letter, i) => {
-            const char: HTMLElement | null = document.querySelector('.hg-button[data-skbtn="' + letter + '"]');
+            const char: HTMLElement | null = document.querySelector('.hg-button[data-skbtn="' + letter.toUpperCase() + '"]');
             let className = null;
             if (item.check[i] === 1) {
                 className = 'is-wrong-pos';
