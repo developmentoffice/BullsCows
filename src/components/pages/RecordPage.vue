@@ -7,8 +7,10 @@ const gameStore = useGameStore();
 <template>
     <table class="table">
         <thead>
-            <th>Слово</th>
-            <th>Попытки</th>
+            <tr>
+                <th>Слово</th>
+                <th>Попытки</th>
+            </tr>
         </thead>
         <tbody>
             <tr v-for="record in gameStore.records">

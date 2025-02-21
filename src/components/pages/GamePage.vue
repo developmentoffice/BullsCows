@@ -1,11 +1,14 @@
 <script lang="ts" setup>
+import Keyboard from 'simple-keyboard';
 import { ref, onMounted, onBeforeUpdate, nextTick } from 'vue';
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { useGameStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { Letters } from '@/config/types';
+import type { SimpleKeyboard }  from 'simple-keyboard';
 
+let keyboard: SimpleKeyboard;
 const gameStore = useGameStore();
 const router = useRouter();
 
@@ -13,6 +16,7 @@ const letterRefs: Ref<HTMLInputElement[]> = ref([]);
 const skipUnwrap = { letterRefs }
 const input: Ref<string[]> = ref([]);
 const letters: Ref<Letters[]> = ref([]);
+const pos: Ref<number> = ref(0);
 const isFull: Ref<boolean> = ref(false);
 const isEnd: Ref<boolean> = ref(false);
 const leaveTo: Ref<string> = ref('');
@@ -26,11 +30,44 @@ word.value = gameStore.getWord();
 
 onMounted(() => {
     letterRefs.value[0].focus();
+    keyboard = new Keyboard({
+        theme: 'hg-theme-default is-active',
+        layout: {
+            default: [
+                'Й Ц У К Е Н Г Ш Щ З Х',
+                'Ф Ы В А П Р О Л Д Ж Э',
+                'Я Ч С М И Т Ь Ъ Б Ю Ё',
+                '{enter}'
+            ]
+        },
+        display: {
+            '{enter}': 'Проверить',
+        },
+        onInit: () => {
+            updateEnter(true);
+        },
+        onChange: (str: string) => {
+            let char = str;
+            if (str.length > 1)
+            {
+                char = str.substring(str.length - 1);
+            }
+            letterRefs.value[pos.value].value = char;
+            input.value[pos.value] = char;
+            keyboard.setInput('');
+            letterRefs.value[pos.value].dispatchEvent(new Event('input'));
+        },
+        onKeyPress: (button: string) => {
+            if (button === '{enter}') {
+                submit();
+            }
+        }
+    });
 });
 onBeforeUpdate(() => {
     letterRefs.value = [];
 });
-onBeforeRouteLeave((to, from) => {
+onBeforeRouteLeave((to) => {
     if (forceRedirect.value || isEnd.value)
     {
         return true;
@@ -56,24 +93,16 @@ function fillLetters(check: number[] = [])
 {
     for (let i = 0; i < gameStore.level; i++) {
         if (check[i] && check[i] === 2) {
-            input.value[i] = word.value[i]
+            input.value[i] = word.value[i];
         } else {
             input.value[i] = '';
         }
     }
 }
-function setLetterRef(el: HTMLInputElement)
-{
-    if (letterRefs.value.length >= gameStore.level) return undefined;
-    if (el)
-    {
-        letterRefs.value.push(el);
-        return ref(el);
-    }
-}
 function setLetter(event: Event, i: number)
 {
     input.value[i] = (event.target as HTMLInputElement).value;
+    nextLetter();
 }
 function nextLetter()
 {
@@ -81,12 +110,15 @@ function nextLetter()
 
     if (i !== -1)
     {
-        letterRefs.value[i].focus();
+        setTimeout(() => {
+            letterRefs.value[i].focus();
+        });
         isFull.value = false;
     }
     else
     {
         isFull.value = true;
+        updateEnter(false);
     }
 }
 function submit()
@@ -96,6 +128,7 @@ function submit()
     let check: number[] = [];
     let wordArr: string[] = word.value.split('');
 
+    hideKeyboard();
     isEnd.value = true;
     input.value.forEach((inp, j) => {
         inp = inp.toLowerCase();
@@ -133,7 +166,14 @@ function submit()
     {
         fillLetters(check);
         isFull.value = false;
-        letterRefs.value[0].focus();
+        nextLetter();
+        setTimeout(() => {
+            window.scrollTo({
+                behavior: 'smooth',
+                top: document.body.scrollHeight,
+                left: 0
+            });
+        }, 10);
     }
 }
 async function newWord()
@@ -167,20 +207,54 @@ function appendUsedLetters(letter: string)
         usedLetters.value.sort((a, b) => collator.compare(a, b));
     }
 }
+function showKeyboard(i: number)
+{
+    pos.value = i;
+    keyboard?.setOptions({
+        theme: 'hg-theme-default is-active'
+    });
+    usedLetters.value.forEach(letter => {
+        const char: HTMLElement | null = document.querySelector('.hg-button[data-skbtn="' + letter + '"]');
+        if (char) {
+            char.classList.add('is-disabled');
+        }
+    });
+    letters.value.forEach(item => {
+        item.val.forEach((letter, i) => {
+            const char: HTMLElement | null = document.querySelector('.hg-button[data-skbtn="' + letter + '"]');
+            let className = null;
+            if (item.check[i] === 1) {
+                className = 'is-wrong-pos';
+            } else if (item.check[i] === 2) {
+                className = 'is-right-pos';
+            }
+            if (char && className) {
+                char.classList.add(className);
+            }
+        });
+    });
+    updateEnter(true);
+}
+function hideKeyboard()
+{
+    keyboard?.setOptions({
+        theme: 'hg-theme-default'
+    });
+}
+function updateEnter(setClass: boolean)
+{
+    const enter: HTMLElement | null = document.querySelector('.hg-button[data-skbtn="{enter}"]');
+    if (enter) {
+        if (setClass) {
+            enter.classList.add('is-disabled');
+        } else {
+            enter.classList.remove('is-disabled');
+        }
+    }
+}
 </script>
 
 <template>
-    <section class="content has-text-centered" v-if="isEnd">
-        <button class="button is-large is-link" type="button" @click="newWord">Новое слово</button>
-    </section>
-    <nav class="panel" v-if="usedLetters.length > 0">
-        <p class="panel-heading">Отсутствующие буквы</p>
-        <div class="panel-block">
-            <div class="is-flex is-flex-wrap-wrap">
-                <div class="mr-2 mb-2 is-size-4 has-text-weight-bold" v-for="letter in usedLetters">{{ letter }}</div>
-            </div>
-        </div>
-    </nav>
     <div class="table-container">
         <form @submit.prevent="submit">
             <table class="table is-bordered is-fullwidth game-table">
@@ -204,17 +278,18 @@ function appendUsedLetters(letter: string)
                         <input
                             class="input is-large"
                             type="text"
+                            inputmode="none"
                             maxlength="1"
                             :ref="skipUnwrap.letterRefs"
                             v-model="input[i]"
-                            @keyup="nextLetter"
+                            @focus="showKeyboard(i)"
                             @input="setLetter($event, i)"
                         >
                     </td>
                     <td>
                         <button
                             type="submit"
-                            class="button is-link"
+                            class="button is-link is-clickable"
                             :class="{ 'is-active': isFull }"
                         >👉</button>
                     </td>
@@ -222,6 +297,9 @@ function appendUsedLetters(letter: string)
             </table>
         </form>
     </div>
+    <section class="content has-text-centered" v-if="isEnd">
+        <button class="button is-large is-link" type="button" @click="newWord">Новое слово</button>
+    </section>
     <div
         class="modal"
         :class="{ 'is-active': warningModal }"
@@ -238,4 +316,5 @@ function appendUsedLetters(letter: string)
             </footer>
         </div>
     </div>
+    <div class="simple-keyboard"></div>
 </template>

@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "pinia": "^2.0.30",
+    "simple-keyboard": "^3.8.37",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
   }
