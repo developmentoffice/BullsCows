@@ -216,7 +216,7 @@ function showKeyboard(n: number)
     usedLetters.value.forEach(letter => {
         const char: HTMLElement | null = document.querySelector('.hg-button[data-skbtn="' + letter.toUpperCase() + '"]');
         if (char) {
-            char.classList.add('is-disabled');
+            char.classList.add('is-no-letter');
         }
     });
     letters.value.forEach(item => {

@@ -94,6 +94,9 @@ body {
             opacity: 0.2;
             pointer-events: none;
         }
+        &.is-no-letter {
+            background: #cccccc;
+        }
         &.is-wrong-pos {
             background: #9393ff;
         }
