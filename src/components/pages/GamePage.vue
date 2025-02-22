@@ -37,11 +37,12 @@ onMounted(() => {
                 'Й Ц У К Е Н Г Ш Щ З Х',
                 'Ф Ы В А П Р О Л Д Ж Э',
                 'Я Ч С М И Т Ь Ъ Б Ю Ё',
-                '{enter}'
+                '{enter} {bksp}'
             ]
         },
         display: {
             '{enter}': 'Проверить',
+            '{bksp}': '⇦'
         },
         onInit: () => {
             updateEnter(true);
@@ -58,8 +59,14 @@ onMounted(() => {
             letterRefs.value[pos.value].dispatchEvent(new Event('input'));
         },
         onKeyPress: (button: string) => {
-            if (button === '{enter}') {
-                submit();
+            switch (button)
+            {
+                case '{enter}':
+                    submit();
+                break;
+                case '{bksp}':
+                    backspace();
+                break;
             }
         }
     });
@@ -252,6 +259,17 @@ function updateEnter(setClass: boolean)
         }
     }
 }
+function backspace()
+{
+    input.value[pos.value] = '';
+    if (pos.value > 0) {
+        pos.value--;
+        setTimeout(() => {
+            letterRefs.value[pos.value].focus();
+        });
+    }
+    updateEnter(true);
+}
 </script>
 
 <template>
@@ -277,6 +295,7 @@ function updateEnter(setClass: boolean)
                     <td v-for="i in range(gameStore.level)">
                         <input
                             class="input is-large"
+                            :class="{ 'is-active': i === pos }"
                             type="text"
                             inputmode="none"
                             maxlength="1"
@@ -284,6 +303,7 @@ function updateEnter(setClass: boolean)
                             v-model="input[i]"
                             @focus="showKeyboard(i)"
                             @input="setLetter($event, i)"
+                            @keyup.delete="backspace"
                         >
                     </td>
                     <td>

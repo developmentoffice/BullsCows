@@ -75,6 +75,10 @@ body {
                 box-shadow: none;
                 border: 0;
             }
+            &.is-active {
+                border: 1px #485fc7 solid;
+                box-shadow: none;
+            }
         }
     }
 }
