@@ -215,6 +215,12 @@ function appendUsedLetters(letter: string)
         usedLetters.value.sort((a, b) => collator.compare(a, b));
     }
 }
+function onInputFocus(n: number)
+{
+    if (isKeyboardVisible.value) {
+        showKeyboard(n);
+    }
+}
 function showKeyboard(n: number)
 {
     pos.value = n;
@@ -308,7 +314,7 @@ function toggleKeyboard()
                             maxlength="1"
                             :ref="skipUnwrap.letterRefs"
                             v-model="input[i]"
-                            @focus="showKeyboard(i)"
+                            @focus="onInputFocus(i)"
                             @input="setLetter($event, i)"
                             @keyup.delete="backspace"
                         >
