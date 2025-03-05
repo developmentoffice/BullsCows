@@ -24,6 +24,7 @@ const forceRedirect: Ref<boolean> = ref(false);
 const word: Ref<string> = ref('');
 const warningModal: Ref<boolean> = ref(false);
 const usedLetters: Ref<string[]> = ref([]);
+const isKeyboardVisible: Ref<boolean> = ref(true);
 
 fillLetters();
 word.value = gameStore.getWord();
@@ -75,7 +76,7 @@ onBeforeUpdate(() => {
     letterRefs.value = [];
 });
 onBeforeRouteLeave((to) => {
-    if (forceRedirect.value || isEnd.value)
+    if (forceRedirect.value || isEnd.value || letters.value.length === 0)
     {
         return true;
     }
@@ -135,7 +136,6 @@ function submit()
     let check: number[] = [];
     let wordArr: string[] = word.value.split('');
 
-    hideKeyboard();
     isEnd.value = true;
     input.value.forEach((inp, j) => {
         inp = inp.toLowerCase();
@@ -168,6 +168,7 @@ function submit()
         input.value = [];
         usedLetters.value = [];
         gameStore.save(word.toLowerCase(), attempts);
+        hideKeyboard();
     }
     else
     {
@@ -241,12 +242,14 @@ function showKeyboard(n: number)
         });
     });
     updateEnter(true);
+    isKeyboardVisible.value = true;
 }
 function hideKeyboard()
 {
     keyboard?.setOptions({
         theme: 'hg-theme-default'
     });
+    isKeyboardVisible.value = false;
 }
 function updateEnter(setClass: boolean)
 {
@@ -269,6 +272,10 @@ function backspace()
         });
     }
     updateEnter(true);
+}
+function toggleKeyboard()
+{
+    hideKeyboard();
 }
 </script>
 
@@ -336,5 +343,8 @@ function backspace()
             </footer>
         </div>
     </div>
-    <div class="simple-keyboard"></div>
+    <div class="simple-keyboard">
+        <div class="simple-keyboard__toggle" @click="hideKeyboard"></div>
+    </div>
+    <div class="simple-keyboard__toggle simple-keyboard__toggle--open" @click="showKeyboard" v-if="!isKeyboardVisible"></div>
 </template>

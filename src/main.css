@@ -108,4 +108,35 @@ body {
             background: #61e158;
         }
     }
+
+    @media (min-width: 1025px) {
+        overflow: visible;
+    }
+}
+@media (min-width: 1025px) {
+    .simple-keyboard__toggle {
+        position: absolute;
+        top: -25px;
+        right: 25px;
+        background: #ececec;
+        width: 25px;
+        height: 25px;
+        border-radius: 4px 4px 0 0;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:before {
+            content: '⮟';
+        }
+
+        &.simple-keyboard__toggle--open {
+            position: fixed;
+            top: auto;
+            bottom: 0;
+            transform: rotate(180deg);
+        }
+    }
 }
